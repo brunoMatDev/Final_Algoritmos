@@ -15,6 +15,6 @@ public class LoginModel
     public string? rol { get; set; }
     public string CheckUser()
     {
-        return string.Format("SELECT u.username, r.roles AS rol FROM users AS u INNER JOIN roles AS r ON u.rol = r.id WHERE username = '{0}' AND password = '{1}'", Username, Password);
+        return string.Format("SELECT u.usuario, r.nombre_rol AS rol FROM usuarios AS u INNER JOIN roles AS r ON u.rol = r.id WHERE username = '{0}' AND password = '{1}'", Username, Password);
     }
 }

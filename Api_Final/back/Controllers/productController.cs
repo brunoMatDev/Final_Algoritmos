@@ -10,12 +10,12 @@ using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("/api/")]
-public class AuthController : ControllerBase
+public class productController : ControllerBase
 {
     private IConfiguration _configuration;
     private Repository repository = new Repository();
 
-    public AuthController(IConfiguration configuration)
+    public productController(IConfiguration configuration)
     {
         this._configuration = configuration;
     }
@@ -26,10 +26,10 @@ public class AuthController : ControllerBase
         try
         {
             string query = "SELECT nombre, precio from productos;";
-            var result = await repository.GetListBy<dynamic>(query);
+            var result = await repository.GetListBy<productModel>(query);
             if (result != null)
                 {
-                    return new DataResponse<List<dynamic>>(true, 200, "Lista de usuarios", result);
+                    return new DataResponse<List<productModel>>(true, 200, "Lista de productos", result);
                 }
                 else
                 {
@@ -43,9 +43,24 @@ public class AuthController : ControllerBase
     }
 
     
+    
+    [HttpPost("SelectByName")]
+    public async Task<BaseResponse> SelectByName(string Name){
+        try{
+            string query = $"SELECT nombre, precio from productos where nombre = '{Name}'";
+            var result = await repository.GetByQuery<productModel>(query);
+            if (result != null)
+                {
+                    return new DataResponse<productModel>(true, 200, "Producto encontrado", result);
+                }
+                else
+                {
+                    return new BaseResponse(false, 204, "No hay usuarios cargados!");
+                }
 
-    [HttpPost("SelectById")]
-    public async Task<BaseResponse> SelectById(){
-        
+        }catch(Exception ex){
+            return new BaseResponse(false, 500, ex.Message);
+
+        }
     }
 }

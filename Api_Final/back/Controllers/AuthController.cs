@@ -20,16 +20,18 @@ public class AuthController : ControllerBase
         this._configuration = configuration;
     }
 
-    [HttpGet("ver")]
-    public async Task<BaseResponse> Login()
+    [HttpPost("Login")]
+    public async Task<BaseResponse> Login([FromBody] LoginModel model)
     {
         try
         {
-            string query = "SELECT nombre, precio from productos;";
-            var result = await repository.GetListBy<dynamic>(query);
+            string query = model.CheckUser();
+            LoginModel result = await repository.GetByQuery<LoginModel>(query);
             if (result != null)
                 {
-                    return new DataResponse<List<dynamic>>(true, 200, "Lista de usuarios", result);
+                    var userRol = result.rol;
+                    var token = GenerateAccessToken(model.Username,userRol);
+                    return new DataResponse<string>(true, 200, "Lista de usuarios", new JwtSecurityTokenHandler().WriteToken(token));
                 }
                 else
                 {
